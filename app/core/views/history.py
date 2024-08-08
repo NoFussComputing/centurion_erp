@@ -41,6 +41,8 @@ class View(OrganizationPermission, generic.View):
 
         from config_management.models.groups import ConfigGroups
 
+        from settings.models.external_link import ExternalLink
+
         if not hasattr(self, 'model'):
 
             match self.kwargs['model_name']:
@@ -60,6 +62,22 @@ class View(OrganizationPermission, generic.View):
                 case 'devicetype':
 
                     self.model = DeviceType
+
+                case 'externallink':
+
+                    self.model = ExternalLink
+
+                case 'knowledgebase':
+
+                    from assistance.models.knowledge_base import KnowledgeBase
+
+                    self.model = KnowledgeBase
+
+                case 'knowledgebasecategory':
+
+                    from assistance.models.knowledge_base import KnowledgeBaseCategory
+
+                    self.model = KnowledgeBaseCategory
 
                 case 'manufacturer':
 
@@ -81,9 +99,21 @@ class View(OrganizationPermission, generic.View):
 
                     self.model = Organization
 
+                case 'port':
+
+                    from itim.models.services import Port
+
+                    self.model = Port
+
                 case 'team':
 
                     self.model = Team
+
+                case 'service':
+
+                    from itim.models.services import Service
+
+                    self.model = Service
 
                 case _:
                     raise Exception('Unable to determine history items model')

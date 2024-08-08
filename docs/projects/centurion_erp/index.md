@@ -38,7 +38,7 @@ Centurion ERP contains the following modules:
 
     - [API](./user/api.md)
 
-    - [Application wide settings](./user/settings.md)
+    - [Application wide settings](./user/settings/app_settings.md)
 
     - History
 
