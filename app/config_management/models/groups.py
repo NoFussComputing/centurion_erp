@@ -186,6 +186,15 @@ class ConfigGroups(GroupsCommonFields, SaveHistory):
         if self.parent:
             self.organization = ConfigGroups.objects.get(id=self.parent.id).organization
 
+        if self.pk:
+
+            obj = ConfigGroups.objects.get(
+                id = self.id,
+            )
+
+            # Prevent organization change. ToDo: add feature so that config can change organizations
+            self.organization = obj.organization
+
         super().save(*args, **kwargs)
 
 
@@ -193,7 +202,7 @@ class ConfigGroups(GroupsCommonFields, SaveHistory):
 
         if self.parent:
 
-            return f'{self.parent.name} > {self.name}'
+            return f'{self.parent} > {self.name}'
 
         return self.name
 

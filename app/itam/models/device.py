@@ -76,7 +76,6 @@ class Device(DeviceCommonFieldsName, SaveHistory):
         null = True,
         blank= True,
         help_text = 'Type of device.',
-        
     )
 
 
@@ -85,6 +84,43 @@ class Device(DeviceCommonFieldsName, SaveHistory):
         null = True,
         blank = True,
     )
+
+    def save(
+            self, force_insert=False, force_update=False, using=None, update_fields=None
+        ):
+        """ Save Device Model
+
+        After saving the device update the related items so that they are a part
+        of the same organization as the device.
+        """
+
+        super().save(
+            force_insert=False, force_update=False, using=None, update_fields=None
+        )
+
+        models_to_update =[ 
+            DeviceSoftware,
+            DeviceOperatingSystem
+        ]
+
+        for update_model in models_to_update:
+
+            obj = update_model.objects.filter(
+                device = self.id,
+            )
+
+            if obj.exists():
+
+                obj.update(
+                    is_global = False,
+                    organization = self.organization,
+                )
+
+        from config_management.models.groups import ConfigGroupHosts
+
+        ConfigGroupHosts.objects.filter(
+            host = self.id,
+        ).delete()
 
 
     def __str__(self):
@@ -258,6 +294,16 @@ class DeviceSoftware(DeviceCommonFields, SaveHistory):
         return self.device
 
 
+    def save(
+            self, force_insert=False, force_update=False, using=None, update_fields=None
+        ):
+
+        self.is_global = False
+
+        super().save(
+            force_insert=False, force_update=False, using=None, update_fields=None
+        )
+
 
 class DeviceOperatingSystem(DeviceCommonFields, SaveHistory):
 
@@ -300,3 +346,14 @@ class DeviceOperatingSystem(DeviceCommonFields, SaveHistory):
         """ Fetch the parent object """
         
         return self.device
+
+
+    def save(
+            self, force_insert=False, force_update=False, using=None, update_fields=None
+        ):
+
+        self.is_global = False
+
+        super().save(
+            force_insert=False, force_update=False, using=None, update_fields=None
+        )
